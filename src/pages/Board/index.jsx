@@ -7,7 +7,7 @@ const Board = props => {
   const renderSquare = i => (
     <Square
       value={squares[i]}
-      onClick={onClick(i)}
+      onClick={() => onClick(i)}
     />
   )
 

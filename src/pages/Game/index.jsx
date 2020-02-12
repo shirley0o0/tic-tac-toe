@@ -1,5 +1,7 @@
 import React from 'react';
 import Board from '../Board';
+import { LINES, AXIS_MAP } from '../../utils/constents';
+// import { LINES, AXIS_MAP } from '@/utils/constents';
 import styles from './index.less'
 
 class Game extends React.Component {
@@ -15,18 +17,8 @@ class Game extends React.Component {
   }
 
   calculateWinner = squares => {
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
+    for (let i = 0; i < LINES.length; i++) {
+      const [a, b, c] = LINES[i];
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
         return squares[a];
       }
@@ -67,7 +59,16 @@ class Game extends React.Component {
     const winner = this.calculateWinner(current.squares);
     
     const moves = history.map((step, move) => {
-      const desc = move ? `Go to move # ${move}` : 'Go To game start';
+      const list = step.squares.slice();
+      let axis = [0, 0]
+      list.map((item, index) => {
+        if (item) {
+          axis = AXIS_MAP[index]
+        }
+      })
+
+      const [x, y] = axis
+      const desc = move ? `返回第${move}步（列：${x}, 行：${y}）` : '开始游戏';
 
       return (
         <li key={move}>
@@ -78,17 +79,19 @@ class Game extends React.Component {
 
     let status;
     if(winner) {
-      status = `winner ${winner}`
+      status = `恭喜， ${winner}胜利啦！`
     } else {
-      status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
+      status = `下一步: ${this.state.xIsNext ? 'X' : 'O'}`;
     }
 
     return (
       <div className={styles.game}>
-        <Board 
-          squares={current.squares}
-          onClick={(i) => this.handleClick(i)}
-        />
+        <div className="game-board">
+          <Board 
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+          />
+        </div>
         <div className={styles.gameInfo}>
           <div>{status}</div>
           <ol>{moves}</ol>
